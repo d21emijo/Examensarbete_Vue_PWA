@@ -1,19 +1,3 @@
-<!-- <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
-</template>
-
-<script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-</script> -->
-
 <template>
   <div id="app">
     <ProductsList />
@@ -21,7 +5,7 @@ export default {
 </template>
 
 <script>
-import ProductsList from "./components/ProductsList.vue"; // Importera komponenten
+import ProductsList from "./components/ProductsList.vue"; 
 
 export default {
   components: {
@@ -29,11 +13,6 @@ export default {
   },
 };
 </script>
-
-<style>
-
-</style>
-
 
 <style>
 #app {
