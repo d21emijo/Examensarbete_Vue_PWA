@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <img alt="Vue logo" src="./assets/logo.png">
   <HelloWorld msg="Welcome to Your Vue.js App"/>
 </template>
@@ -12,7 +12,28 @@ export default {
     HelloWorld
   }
 }
+</script> -->
+
+<template>
+  <div id="app">
+    <ProductsList />
+  </div>
+</template>
+
+<script>
+import ProductsList from "./components/ProductsList.vue"; // Importera komponenten
+
+export default {
+  components: {
+    ProductsList,
+  },
+};
 </script>
+
+<style>
+
+</style>
+
 
 <style>
 #app {

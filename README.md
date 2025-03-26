@@ -6,3 +6,4 @@ vue create vue_examensarbete
 npm run build
 serve -s dist
 vue add pwa
+json-server --watch db.json --port 5000
