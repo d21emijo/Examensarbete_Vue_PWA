@@ -26,12 +26,10 @@ export default {
       categories: [],
       itemsPerSection: 3, // hur många produkter 
       maxSections: 5, // hur många sektioner/produkt
-      error: null,
-      loading: true,
     };
   },
   async mounted() {
-    await navigator.serviceWorker.ready;
+    await navigator.serviceWorker.ready; // kör service worker först
     await this.fetchProducts();
   },
   methods: {
@@ -62,9 +60,7 @@ export default {
           console.error("Ingen cache-data tillgänglig");
           this.error = "Ingen data tillgänglig online eller offline";
         }
-      } finally {
-        this.loading = false;
-      }
+      } 
     },
 
     updateProducts(data) {
@@ -91,8 +87,6 @@ export default {
           processedProducts.filter((p) => p.terms.toLowerCase().includes(key))
         ),
       }));
-
-      console.log("Kategorier skapade:", this.categories);
     },
 
     splitIntoSections(products) {
@@ -100,17 +94,15 @@ export default {
         Math.ceil(products.length / this.itemsPerSection),
         this.maxSections
       );
-
+      //räkna ut vilka produkter som ska ingå utifrån index
       return Array.from({ length: totalSections }, (_, index) => {
         const startIndex = index * this.itemsPerSection;
         return products.slice(startIndex, startIndex + this.itemsPerSection);
-      });
+      }); 
     },
   },
 };
-</script>
-
-  
+</script>  
   
 <style scoped>
   .container {
@@ -124,11 +116,6 @@ export default {
     text-align: center;
   }
   
-  .error {
-    color: red;
-    text-align: center;
-  }
-  
   .product-section {
     display: flex;
     justify-content: space-between;
@@ -137,11 +124,12 @@ export default {
   
   .product-card {
     width: 30%;
-    background: #fff;
     padding: 10px;
+    margin: 5px;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     text-align: center;
+    background-color: aquamarine;
   }
   
   .product-image {
@@ -159,6 +147,10 @@ export default {
   .product-price {
     font-size: 12px;
     color: #666;
+  }
+
+  .product-list {
+    display: flex;
   }
 </style>
   
