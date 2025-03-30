@@ -30,7 +30,7 @@ export default {
       loading: true,
     };
   },
-  async created() {
+  async mounted() {
     await this.fetchProducts();
   },
   methods: {
