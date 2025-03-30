@@ -1,47 +1,52 @@
-/* global clients */
-import { precacheAndRoute } from 'workbox-precaching';
-import { registerRoute } from 'workbox-routing';
-import { CacheFirst, NetworkFirst } from 'workbox-strategies';
+import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
+import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
+import { registerRoute } from 'workbox-routing';
+import { CacheFirst } from 'workbox-strategies';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
+// import { StaleWhileRevalidate } from 'workbox-strategies';
 
-// Lägger till alla filer som Workbox precachear vid installation
+clientsClaim();
+
 precacheAndRoute(self.__WB_MANIFEST || []);
 
-// 📌 Cacha API-responsen för produkter (NetworkFirst = använd cache vid offline)
+// Make sure all navigations load index.html (App Shell model)
+const fileExtensionRegexp = new RegExp('/[^/?]+\\.[^/]+$');
 registerRoute(
-  ({ url }) => url.pathname.startsWith('/products'),
-  new NetworkFirst({
-    cacheName: 'products',
-    plugins: [
-      new CacheableResponsePlugin({ statuses: [0, 200] }),
-      new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 5 * 60 }), // 5 minuters cache
-    ],
-  })
+  ({ request, url }) => {
+    if (request.mode !== 'navigate') return false;
+    if (url.pathname.startsWith('/_')) return false;
+    if (url.pathname.match(fileExtensionRegexp)) return false;
+    return true;
+  },
+  createHandlerBoundToURL('/index.html') 
 );
 
-// 📌 Cacha bilder (CacheFirst = använd cache direkt om möjligt)
+// Cache images with CacheFirst strategy
 registerRoute(
   ({ request }) => request.destination === 'image',
   new CacheFirst({
     cacheName: 'images',
     plugins: [
-      new CacheableResponsePlugin({ statuses: [0, 200] }),
-      new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 7 * 24 * 60 * 60 }), // 1 vecka
+      new CacheableResponsePlugin({
+        statuses: [0, 200], // 0 krävs för CORS
+      }),
+      new ExpirationPlugin({
+        maxEntries: 10, // Max antal bilder i cache
+        maxAgeSeconds: 7 * 24 * 60 * 60, // Sparas i en vecka
+      }),
     ],
   })
 );
 
-// 📌 Lyssna på meddelanden och tillåt direktuppdatering av service workern
+// Allow the web app to update Service Worker immediately
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 });
 
-// 📌 Aktivera ny service worker direkt när alla klienter är stängda
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    clients.claim()
-  );
-});
+// Activate new Service Worker immediately
+// self.addEventListener('activate', (event) => {
+//   event.waitUntil(self.clients.claim());
+// });
