@@ -31,6 +31,7 @@ export default {
     };
   },
   async mounted() {
+    await navigator.serviceWorker.ready;
     await this.fetchProducts();
   },
   methods: {
