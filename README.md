@@ -1,15 +1,19 @@
 # Examensarbete_Vue_PWA
-# Creation from terminal
-npm install -g @vue/cli 
+## Creation from terminal
+npm install -g @vue/cli
+
 vue create vue_examensarbete
+
 Vue add pwa
-# How to run from terminal
+## How to run from terminal
 npm run build
-serve -s dist -l 4000
+
 json-server --watch db.json --port 5000
-# Usage
-To add/remove categories add a `name` That's included in the db.JSON from "terms" 
-To change how many products thats displayed change ´maxSections´ as it displayes the maximum nr of products based on the index
+
+serve -s dist -l 4000
+## Usage
+To add/remove categories add a `name` That's included in the [db.JSON](vue_examansarbete\src\db.JSON) from "terms" 
+To change how many products thats displayed change `maxSections` as it displayes the maximum nr of products based on the index
 ```
   data() {
     return {
@@ -24,12 +28,12 @@ To change how many products thats displayed change ´maxSections´ as it display
     };
   },
 ```
-this is located in the [ProductsList.Vue file](vue_examansarbete\src\components\ProductsList.vue)
+this is located in the [ProductsList.Vue file](/vue_examansarbete/src/components/ProductsList.vue)
 
-# Service Worker
+## Service Worker
 The fetch puts products in storage and the service worker intercepts this and puts images in storage aswell.
 This is set to `CacheFirst` and is put in cache storage under `images`-
-The entire db.JSON is put in the storage as text but only 10 pictures, to change: `maxEntries: 10`
+The entire db.JSON is put in the storage as a JSON, but only 10 pictures, to change: `maxEntries: 10`
 ```
 registerRoute(
   ({ request }) => request.destination === 'image',
@@ -47,6 +51,6 @@ registerRoute(
   })
 );
 ```
-This is located in the [Service-worker.js file](vue_examansarbete\service-worker.js)
+This is located in the [Service-worker.js file](/vue_examansarbete/service-worker.js)
 
-# Testing
+## Testing
