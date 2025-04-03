@@ -7,9 +7,9 @@
           <h3>Sektion {{ sectionIndex + 1 }}</h3>
           <div class="product-list">
             <div v-for="product in section" :key="product.id" class="product-card">
-              <h3>{{ product.name }}</h3>
-              <img :src="product.images[0]" :alt="product.name" width="150" crossorigin="anonymous" />
-              <p>Pris: {{ product.price }} {{ product.currency }}</p>
+              <h3 class="product-name">{{ product.name }}</h3>
+              <img :src="product.images[0]" :alt="product.name" width="150" crossorigin="anonymous" class="product-image"/>
+              <p class="product-price">Pris: {{ product.price }} {{ product.currency }}</p>
             </div>
           </div>
         </div>
@@ -22,15 +22,19 @@
 export default {
   data() {
     return {
-      products: [],
-      categories: [],
       itemsPerSection: 3, // hur många produkter 
       maxSections: 5, // hur många sektioner/produkt
+      categories: [
+      { name: "jackets", displayName: "Jackor", sections: [] },
+      { name: "shoes", displayName: "Skor", sections: [] },
+      { name: "pants", displayName: "Byxor", sections: [] },
+      { name: "puffers", displayName: "Fluffare", sections: [] },
+      ],
     };
   },
   async mounted() {
     await navigator.serviceWorker.ready; // kör service worker först
-    await this.fetchProducts();
+    this.fetchProducts();
   },
   methods: {
     async fetchProducts() {
@@ -71,22 +75,12 @@ export default {
           ? JSON.parse(product.images.replace(/'/g, '"'))
           : product.images,
       }));
-
-      // Lista med kategorier , lägg till ta bort här
-      const categoryNames = [
-        { key: "jackets", displayName: "Jackor" },
-        { key: "shoes", displayName: "Skor" },
-        { key: "pants", displayName: "Byxor" },
-        { key: "puffers", displayName: "Fluffare" },
-      ];
-
-      this.categories = categoryNames.map(({ key, displayName }) => ({
-        name: key,
-        displayName,
-        sections: this.splitIntoSections(
-          processedProducts.filter((p) => p.terms.toLowerCase().includes(key))
-        ),
-      }));
+      //loopa igenom och dela upp kategorierna
+      this.categories.forEach((category) => {
+        category.sections = this.splitIntoSections(
+        processedProducts.filter((p) => p.terms.toLowerCase().includes(category.name))
+      );
+      });
     },
 
     splitIntoSections(products) {
@@ -105,21 +99,15 @@ export default {
 </script>  
   
 <style scoped>
-  .container {
-    width: 100%;
-    max-width: 375px; /* Anpassad för iPhone SE */
-    margin: 0 auto;
-    padding: 10px;
+  .section-container {
+    margin: 5px;
   }
-  
-  h1 {
-    text-align: center;
+  .section {
+    margin: 5px;
   }
-  
-  .product-section {
+
+  .product-list {
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
   }
   
   .product-card {
@@ -131,26 +119,29 @@ export default {
     text-align: center;
     background-color: aquamarine;
   }
-  
+
   .product-image {
     width: 100%;
     height: auto;
     border-radius: 5px;
+  }
+
+  h1 {
+    text-align: center;
   }
   
   .product-name {
     font-size: 14px;
     font-weight: bold;
     margin-top: 5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: overlay;
   }
   
   .product-price {
     font-size: 12px;
     color: #666;
-  }
-
-  .product-list {
-    display: flex;
   }
 </style>
   
