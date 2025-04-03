@@ -12,7 +12,7 @@ json-server --watch db.json --port 5000
 
 serve -s dist -l 4000
 ## Usage
-To add/remove categories add a `name` That's included in the [db.JSON](vue_examansarbete\src\db.JSON) from "terms" 
+To add/remove categories add a `name` That's included in the [db.JSON](/vue_examansarbete/src/db.JSON) from "terms" 
 To change how many products thats displayed change `maxSections` as it displayes the maximum nr of products based on the index
 ```
   data() {
