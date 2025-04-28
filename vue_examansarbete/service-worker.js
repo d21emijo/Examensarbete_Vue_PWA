@@ -32,10 +32,17 @@ registerRoute(
         statuses: [0, 200], // 0 krävs för CORS
       }),
       new ExpirationPlugin({
-        maxEntries: 10, // Max antal bilder i cache
+        maxEntries: 0, // Max antal bilder i cache
         maxAgeSeconds: 7 * 24 * 60 * 60, // Sparas i en vecka
       }),
     ],
+  })
+);
+
+registerRoute(
+  ({url}) => url.pathname === '/products',
+  new CacheFirst({
+    cacheName: 'products-cache',
   })
 );
 

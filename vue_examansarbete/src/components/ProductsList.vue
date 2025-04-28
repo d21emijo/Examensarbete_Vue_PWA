@@ -23,7 +23,7 @@ export default {
   data() {
     return {
       itemsPerSection: 3, // hur många produkter 
-      maxSections: 5, // hur många sektioner/produkt
+      maxSections: 50, // hur många sektioner/produkt
       categories: [
       { name: "jackets", displayName: "Jackor", sections: [] },
       { name: "shoes", displayName: "Skor", sections: [] },
@@ -39,33 +39,24 @@ export default {
   methods: {
     async fetchProducts() {
       try {
-        const response = await fetch("http://localhost:5000/products");
-        if (!response.ok) throw new Error("Misslyckades att hämta data från nätverket");
+    const cache = await caches.open("products-cache");
+    const cachedResponse = await cache.match("http://localhost:5000/products");
 
-        const data = await response.json();
-        console.log("Data hämtad från nätverket:", data);
-
-        // Cachea datan lokalt för offline-användning
-        const cache = await caches.open("products");
-        await cache.put("/products", new Response(JSON.stringify(data)));
-
-        this.updateProducts(data);
-      } catch (error) {
-        console.error("Fel vid hämtning av data, försöker från cache:", error);
-
-        const cache = await caches.open("products");
-        const cachedResponse = await cache.match("/products");
-
-        if (cachedResponse) {
-          const cachedData = await cachedResponse.json();
-          console.log("Data hämtad från cachen:", cachedData);
-          this.updateProducts(cachedData);
-        } else {
-          console.error("Ingen cache-data tillgänglig");
-          this.error = "Ingen data tillgänglig online eller offline";
-        }
-      } 
-    },
+    if (cachedResponse) {
+      const cachedData = await cachedResponse.json();
+      console.log("Data hämtad från cachen:", cachedData);
+      this.updateProducts(cachedData);
+    } else {
+      const response = await fetch("http://localhost:5000/products");
+      if (!response.ok) throw new Error("Misslyckades att hämta data från nätverket");
+      const data = await response.json();
+      console.log("Data hämtad från nätverket:", data);
+      this.updateProducts(data);
+    }
+  } catch (error) {
+    console.error("Fel vid hämtning från cache och nätverk:", error);
+  }
+},
 
     updateProducts(data) {
       // Säkerställ att bilderna har rätt format
@@ -99,49 +90,6 @@ export default {
 </script>  
   
 <style scoped>
-  .section-container {
-    margin: 5px;
-  }
-  .section {
-    margin: 5px;
-  }
 
-  .product-list {
-    display: flex;
-  }
-  
-  .product-card {
-    width: 30%;
-    padding: 10px;
-    margin: 5px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    background-color: aquamarine;
-  }
-
-  .product-image {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
-  }
-
-  h1 {
-    text-align: center;
-  }
-  
-  .product-name {
-    font-size: 14px;
-    font-weight: bold;
-    margin-top: 5px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: overlay;
-  }
-  
-  .product-price {
-    font-size: 12px;
-    color: #666;
-  }
 </style>
   
